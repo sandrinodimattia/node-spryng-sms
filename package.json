@@ -1,10 +1,11 @@
 {
   "name": "spryng-sms",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Client for the Spryng SMS Gateway API",
   "main": "lib/index.js",
   "dependencies": {
     "bluebird": "^3.4.1",
+    "request": "^2.74.0",
     "request-promise": "^4.1.0"
   },
   "devDependencies": {
