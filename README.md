@@ -7,6 +7,10 @@
 This sample shows how to initiate the client and send a text message:
 
 ```js
+// ES5
+const SmsApiClient = require('spryng-sms').SmsApiClient;
+
+// ES6
 import { SmsApiClient } from 'spryng-sms';
 
 const client = new SmsApiClient({
