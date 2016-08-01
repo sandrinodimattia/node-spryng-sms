@@ -36,8 +36,9 @@ client.send(request)
   });
 ```
 
-You can also specify multiple destinations:
+### Sending to multiple destinations
 
+You can also specify multiple destinations:
 
 ```js
 const request = {
@@ -55,5 +56,17 @@ client.send(request)
   })
   .catch(err => {
     console.log('Error sending SMS:', err);
+  });
+```
+
+### Checking your credit
+
+```js
+client.getRemainingCredit()
+  .then((credit) => {
+    console.log('Remaining credit:', credit);
+  })
+  .catch(err => {
+    console.log(err);
   });
 ```

@@ -4,7 +4,7 @@ import Promise from 'bluebird';
 import { ArgumentError, ApiError, ValidationError } from './errors';
 
 export default class SmsApiClient {
-  constructor({ baseUrl = 'http://www.spryng.be', username, password }) {
+  constructor({ baseUrl = 'https://www.spryng.be', username, password }) {
     if (username === null || username === undefined) {
       throw new ArgumentError('Must provide a username for the SMS Gateway API');
     }
@@ -23,7 +23,7 @@ export default class SmsApiClient {
     this.password = password;
   }
 
-  getError(body) {
+  getSendError(body) {
     switch (body) {
       case '100':
         return new ApiError('missing_parameter', 'Missing Parameter for the Send operation');
@@ -62,7 +62,7 @@ export default class SmsApiClient {
     }
   }
 
-  validateRequest(request) {
+  validateSendRequest(request) {
     if (request === null || request === undefined) {
       return new ValidationError('request_required', 'A request object needs to be provided');
     }
@@ -81,7 +81,7 @@ export default class SmsApiClient {
   }
 
   send(request) {
-    const validationError = this.validateRequest(request);
+    const validationError = this.validateSendRequest(request);
     if (validationError) {
       return Promise.reject(validationError);
     }
@@ -104,10 +104,35 @@ export default class SmsApiClient {
 
     return rp(options)
       .then(body => {
-        const err = this.getError(body);
-        if (err) {
-          throw err;
+        const sendError = this.getSendError(body);
+        if (sendError) {
+          return Promise.reject(sendError);
         }
+      });
+  }
+
+  getRemainingCredit() {
+    const options = {
+      method: 'GET',
+      uri: `${this.baseUrl}/check.php`,
+      qs: {
+        USERNAME: this.username,
+        PASSWORD: this.password
+      }
+    };
+
+    return rp(options)
+      .then(body => {
+        if (!body || body === '-1') {
+          return Promise.reject(new ApiError('credit_check_error', 'Unknown error while trying to retrieve credit status'));
+        }
+
+        const credit = parseFloat(body);
+        if (Number.isNaN(credit)) {
+          return Promise.reject(new ApiError('credit_check_error', `Unable to parse credit details: ${credit}`));
+        }
+
+        return credit;
       });
   }
 }
