@@ -35,3 +35,25 @@ client.send(request)
     console.log('Error sending SMS:', err);
   });
 ```
+
+You can also specify multiple destinations:
+
+
+```js
+const request = {
+  allowLong: true,
+  destination: [ '32123456789', '32987654321' ],
+  route: 'BUSINESS', // or ECONOMY
+  body: 'Hi there, this is a message.',
+  sender: '0032111111111',
+  reference: '1234567890'
+};
+
+client.send(request)
+  .then(() => {
+    console.log('SMS message has been sent.');
+  })
+  .catch(err => {
+    console.log('Error sending SMS:', err);
+  });
+```

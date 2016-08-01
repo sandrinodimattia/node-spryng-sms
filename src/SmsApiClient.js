@@ -93,7 +93,7 @@ export default class SmsApiClient {
         OPERATION: 'send',
         USERNAME: this.username,
         PASSWORD: this.password,
-        DESTINATION: request.destination,
+        DESTINATION: Array.isArray(request.destination) ? request.destination.join(', ') : request.destination,
         ROUTE: request.route,
         ALLOWLONG: request.allowLong ? 1 : 0,
         BODY: request.body,
