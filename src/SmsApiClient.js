@@ -4,7 +4,7 @@ import Promise from 'bluebird';
 import { ArgumentError, ApiError, ValidationError } from './errors';
 
 export default class SmsApiClient {
-  constructor({ baseUrl = 'https://api.spryngsms.com/api/', username, password }) {
+  constructor({ baseUrl = 'https://api.spryngsms.com/api', username, password }) {
     if (username === null || username === undefined) {
       throw new ArgumentError('Must provide a username for the SMS Gateway API');
     }
