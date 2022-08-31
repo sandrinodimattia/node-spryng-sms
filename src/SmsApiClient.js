@@ -4,7 +4,7 @@ import Promise from 'bluebird';
 import { ArgumentError, ApiError, ValidationError } from './errors';
 
 export default class SmsApiClient {
-  constructor({ baseUrl = 'https://www.spryng.be', username, password }) {
+  constructor({ baseUrl = 'https://rest.spryngsms.com', username, password }) {
     if (username === null || username === undefined) {
       throw new ArgumentError('Must provide a username for the SMS Gateway API');
     }
@@ -88,7 +88,7 @@ export default class SmsApiClient {
 
     const options = {
       method: 'POST',
-      uri: `${this.baseUrl}/send.php`,
+      uri: `${this.baseUrl}/api/simple/message`,
       form: {
         OPERATION: 'send',
         USERNAME: this.username,
@@ -102,37 +102,37 @@ export default class SmsApiClient {
       }
     };
 
-    return rp(options)
-      .then(body => {
-        const sendError = this.getSendError(body);
-        if (sendError) {
-          return Promise.reject(sendError);
-        }
-      });
+    return rp(options).then((body) => {
+      const sendError = this.getSendError(body);
+      if (sendError) {
+        return Promise.reject(sendError);
+      }
+    });
   }
 
   getRemainingCredit() {
     const options = {
       method: 'GET',
-      uri: `${this.baseUrl}/check.php`,
+      uri: `${this.baseUrl}/api/simple/balance`,
       qs: {
         USERNAME: this.username,
         PASSWORD: this.password
       }
     };
 
-    return rp(options)
-      .then(body => {
-        if (!body || body === '-1') {
-          return Promise.reject(new ApiError('credit_check_error', 'Unknown error while trying to retrieve credit status'));
-        }
+    return rp(options).then((body) => {
+      if (!body || body === '-1') {
+        return Promise.reject(
+          new ApiError('credit_check_error', 'Unknown error while trying to retrieve credit status')
+        );
+      }
 
-        const credit = parseFloat(body);
-        if (Number.isNaN(credit)) {
-          return Promise.reject(new ApiError('credit_check_error', `Unable to parse credit details: ${credit}`));
-        }
+      const credit = parseFloat(body);
+      if (Number.isNaN(credit)) {
+        return Promise.reject(new ApiError('credit_check_error', `Unable to parse credit details: ${credit}`));
+      }
 
-        return credit;
-      });
+      return credit;
+    });
   }
 }
